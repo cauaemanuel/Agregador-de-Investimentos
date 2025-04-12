@@ -1,6 +1,7 @@
 package casa.on.agregadordeinvestimentos.service;
 
 import casa.on.agregadordeinvestimentos.controller.DTO.UserDTO;
+import casa.on.agregadordeinvestimentos.controller.DTO.UserUpdateDTO;
 import casa.on.agregadordeinvestimentos.controller.map.UserMapper;
 import casa.on.agregadordeinvestimentos.entity.User;
 import casa.on.agregadordeinvestimentos.repository.UserRepository;
@@ -40,9 +41,25 @@ public class UserService {
        }
     }
 
-    public User updateUser(UserDTO dto){
-        var entity = mapper.UserDTOtoUser(dto);
-        return repository.save(entity);
+    public User updateUserById(String userId,
+                               UserUpdateDTO body ){
+        var id = UUID.fromString(userId);
+        var userEntity = repository.findById(id);
+
+        if (userEntity.isPresent()){
+            var user = userEntity.get();
+
+            if (body.username() != null){
+                user.setUsername(body.username());
+            }
+
+            if (body.password() != null){
+                user.setPassword(body.password());
+            }
+
+            return repository.save(user);
+        }
+        return null;
     }
 
     public List<User> findAll(){

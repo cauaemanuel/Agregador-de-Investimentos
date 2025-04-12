@@ -1,6 +1,7 @@
 package casa.on.agregadordeinvestimentos.controller;
 
 import casa.on.agregadordeinvestimentos.controller.DTO.UserDTO;
+import casa.on.agregadordeinvestimentos.controller.DTO.UserUpdateDTO;
 import casa.on.agregadordeinvestimentos.entity.User;
 import casa.on.agregadordeinvestimentos.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,13 @@ public class UserController {
     public ResponseEntity<List<User>> findAllUser(){
         var users = service.findAll();
         return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Void> updateUserById(@PathVariable("userId") String useId,
+                                               @RequestBody UserUpdateDTO body){
+        service.updateUserById(useId, body);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{userId}")
