@@ -1,4 +1,6 @@
 package casa.on.agregadordeinvestimentos.controller.DTO;
 
-public record UserUpdateDTO (String username, String password){
+import jakarta.validation.constraints.NotBlank;
+
+public record UserUpdateDTO (@NotBlank String username, @NotBlank String password){
 }

@@ -43,19 +43,14 @@ public class UserService {
 
     public User updateUserById(String userId,
                                UserUpdateDTO body ){
+
         var id = UUID.fromString(userId);
         var userEntity = repository.findById(id);
 
         if (userEntity.isPresent()){
+
             var user = userEntity.get();
-
-            if (body.username() != null){
-                user.setUsername(body.username());
-            }
-
-            if (body.password() != null){
-                user.setPassword(body.password());
-            }
+            mapper.updateUserFromDto(body, user);
 
             return repository.save(user);
         }

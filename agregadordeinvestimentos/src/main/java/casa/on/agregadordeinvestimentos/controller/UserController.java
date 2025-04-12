@@ -4,6 +4,7 @@ import casa.on.agregadordeinvestimentos.controller.DTO.UserDTO;
 import casa.on.agregadordeinvestimentos.controller.DTO.UserUpdateDTO;
 import casa.on.agregadordeinvestimentos.entity.User;
 import casa.on.agregadordeinvestimentos.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +45,7 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public ResponseEntity<Void> updateUserById(@PathVariable("userId") String useId,
-                                               @RequestBody UserUpdateDTO body){
+                                               @RequestBody @Valid UserUpdateDTO body){
         service.updateUserById(useId, body);
         return ResponseEntity.noContent().build();
     }
