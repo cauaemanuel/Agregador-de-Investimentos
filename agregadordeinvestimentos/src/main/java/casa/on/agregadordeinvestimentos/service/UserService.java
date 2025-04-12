@@ -32,7 +32,12 @@ public class UserService {
     }
 
     public void deleteById(String userid){
-        repository.deleteById(UUID.fromString(userid));
+       var id = UUID.fromString(userid);
+       var userExists = repository.existsById(id);
+
+       if(userExists){
+           repository.deleteById(id);
+       }
     }
 
     public User updateUser(UserDTO dto){
