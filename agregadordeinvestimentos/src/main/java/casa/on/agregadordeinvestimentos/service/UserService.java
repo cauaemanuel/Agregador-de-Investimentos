@@ -7,6 +7,7 @@ import casa.on.agregadordeinvestimentos.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,13 +23,24 @@ public class UserService {
     }
 
     public User createUser(UserDTO dto){
-
         var entity = mapper.UserDTOtoUser(dto);
         return repository.save(entity);
-
     }
 
     public Optional<User> getUserById(String userid){
-        return  repository.findById(UUID.fromString(userid));
+        return repository.findById(UUID.fromString(userid));
+    }
+
+    public void deleteById(String userid){
+        repository.deleteById(UUID.fromString(userid));
+    }
+
+    public User updateUser(UserDTO dto){
+        var entity = mapper.UserDTOtoUser(dto);
+        return repository.save(entity);
+    }
+
+    public List<User> findAll(){
+        return repository.findAll();
     }
 }
