@@ -14,11 +14,14 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
+
 import org.mapstruct.factory.Mappers;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +34,9 @@ class UserServiceTest {
 
     @Captor
     private ArgumentCaptor<User> userArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     private UserService service;
 
@@ -96,10 +102,115 @@ class UserServiceTest {
     @Nested
     class getUserById{
 
+        @Test
+        void shouldGetUserByIdWithSuccess(){
+
+            var user = new User(
+                    UUID.randomUUID(),
+                    "username",
+                    "user@gmail.com",
+                    "123",
+                    Instant.now(),
+                    null
+            );
+
+            doReturn(Optional.of(user)).when(repository).findById(uuidArgumentCaptor.capture());
+            //act
+
+            var output = service.getUserById(user.getUserId().toString());
+            //assert
+            assertTrue(output.isPresent());
+            assertEquals(user.getUserId(), uuidArgumentCaptor.getValue());
+        }
+
+        @Test
+        void shouldGetUserByIdWithSuccessOptionalIsEmpty(){
+
+            var userid = UUID.randomUUID();
+            doReturn(Optional.empty()).when(repository).findById(uuidArgumentCaptor.capture());
+
+            //act
+            var output = service.getUserById(userid.toString());
+            //assert
+
+            assertTrue(output.isEmpty());
+            assertEquals(userid, uuidArgumentCaptor.getValue());
+        }
+    }
+
+    @Nested
+    class listUsers{
+
+        @Test
+        @DisplayName("Should return all users with success")
+        void shouldReturnAllUsersWithSuccess(){
+
+            var user = new User(
+                    UUID.randomUUID(),
+                    "username",
+                    "user@gmail.com",
+                    "123",
+                    Instant.now(),
+                    null
+            );
+
+            doReturn(List.of(user)).when(repository).findAll();
+
+            //act
+            var output = service.findAll();
+
+            //assert
+            assertNotNull(output);
+            assertEquals(1, output.size());
+
+        }
+    }
+
+    @Nested
+    class deleteById{
+
+        @Test
+        @DisplayName("Shoudl delete user with success")
+        void shoudlDeleteUserWithSuccess(){
+
+            doReturn(true).when(repository).existsById(uuidArgumentCaptor.capture());
+            doNothing().when(repository).deleteById(uuidArgumentCaptor.capture());
+
+            var userId = UUID.randomUUID();
+            //act
+            service.deleteById(userId.toString());
+
+            //assert
+            var idList = uuidArgumentCaptor.getAllValues();
+            assertEquals(userId,idList.get(0));
+            assertEquals(userId, idList.get(1));
+
+            verify(repository, times(1)).existsById(any());
+            verify(repository, times(1)).deleteById( any());
+
+
+        }
+
     }
 
     @Nested
     class UserMapperTest{
+
+        @Test
+        @DisplayName("Should map userDto to user Correct")
+        void shouldMapUserDTOtoUserCorrect(){
+
+            var input = new UserDTO("username",
+                    "user@gmail.com",
+                    "123");
+
+            var user = mapper.UserDTOtoUser(input);
+
+            assertEquals(input.username(), user.getUsername());
+            assertEquals(input.email(), user.getEmail());
+            assertEquals(input.password(), user.getPassword());
+
+        }
 
     }
 }
