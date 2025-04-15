@@ -1,6 +1,7 @@
 package casa.on.agregadordeinvestimentos.service;
 
 import casa.on.agregadordeinvestimentos.controller.DTO.UserDTO;
+import casa.on.agregadordeinvestimentos.controller.DTO.UserUpdateDTO;
 import casa.on.agregadordeinvestimentos.controller.map.UserMapper;
 import casa.on.agregadordeinvestimentos.entity.User;
 import casa.on.agregadordeinvestimentos.repository.UserRepository;
@@ -212,6 +213,69 @@ class UserServiceTest {
     }
 
     @Nested
+    class updateUserById{
+
+        @Test
+        @DisplayName("Should update user by id when user exists and username")
+        void shouldUpdateUserByIdWhenUserExistsAndUsernameAndPasswordIsFilter() {
+            //arrange
+
+            var updateUserDto = new UserUpdateDTO("user", "123");
+
+            var user = new User(
+                    UUID.randomUUID(), "username",
+                    "user@gmail.com", "123",
+                    Instant.now(), null
+            );
+
+            doReturn(Optional.of(user))
+                    .when(repository).findById(uuidArgumentCaptor.capture());
+            doReturn(user)
+                    .when(repository).save(userArgumentCaptor.capture());
+
+            //act
+            var output = service.updateUserById(user.getUserId().toString(), updateUserDto);
+
+            //assert
+            assertEquals(user.getUserId(), uuidArgumentCaptor.getValue());
+
+            var userCaptured = userArgumentCaptor.getValue();
+
+            assertEquals(updateUserDto.username(), userCaptured.getUsername());
+            assertEquals(updateUserDto.password(),userCaptured.getPassword());
+
+            verify(repository, times(1))
+                    .findById(uuidArgumentCaptor.getValue());
+            verify(repository,times(1))
+                    .save(user);
+        }
+
+        @Test
+        @DisplayName("Should not update user by id when user not exists ")
+        void shouldNotUpdateUserByIdWhenUserNotExists() {
+            //arrange
+            var updateUserDto = new UserUpdateDTO("user", "123");
+
+            var userId = UUID.randomUUID();
+            doReturn(Optional.empty())
+                    .when(repository).findById(uuidArgumentCaptor.capture());
+
+            //act
+            var output = service.updateUserById(userId.toString(), updateUserDto);
+
+            //assert
+            assertEquals(userId, uuidArgumentCaptor.getValue());
+
+            verify(repository, times(1))
+                    .findById(uuidArgumentCaptor.getValue());
+
+            verify(repository,times(0))
+                    .save(any());
+        }
+
+    }
+
+    @Nested
     class UserMapperTest {
 
         @Test
@@ -230,5 +294,22 @@ class UserServiceTest {
 
         }
 
+        @Test
+        @DisplayName("Should map userDto to user Correct")
+        void shouldUpdateUserFromDto() {
+
+            var updateUserDto = new UserUpdateDTO("user", "123");
+
+            var user = new User(
+                    UUID.randomUUID(), "username",
+                    "user@gmail.com", "1234",
+                    Instant.now(), null
+            );
+
+            mapper.updateUserFromDto(updateUserDto, user);
+
+            assertEquals(user.getUsername(), updateUserDto.username());
+            assertEquals(user.getPassword(), updateUserDto.password());
+        }
     }
 }
