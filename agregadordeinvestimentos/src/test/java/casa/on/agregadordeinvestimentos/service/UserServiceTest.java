@@ -48,11 +48,11 @@ class UserServiceTest {
     }
 
     @Nested
-    class createUser{
+    class createUser {
 
         @Test
         @DisplayName("Should create a user with success")
-        void shouldCreaterAUser(){
+        void shouldCreaterAUser() {
             //arrange
             var user = new User(
                     UUID.randomUUID(),
@@ -82,7 +82,7 @@ class UserServiceTest {
 
         @Test
         @DisplayName("Should throw exception when error occurs")
-        void shouldThrowExceptionWhenErrorOccurs(){
+        void shouldThrowExceptionWhenErrorOccurs() {
 
             //arrange
 
@@ -100,10 +100,10 @@ class UserServiceTest {
     }
 
     @Nested
-    class getUserById{
+    class getUserById {
 
         @Test
-        void shouldGetUserByIdWithSuccess(){
+        void shouldGetUserByIdWithSuccess() {
 
             var user = new User(
                     UUID.randomUUID(),
@@ -124,7 +124,7 @@ class UserServiceTest {
         }
 
         @Test
-        void shouldGetUserByIdWithSuccessOptionalIsEmpty(){
+        void shouldGetUserByIdWithSuccessOptionalIsEmpty() {
 
             var userid = UUID.randomUUID();
             doReturn(Optional.empty()).when(repository).findById(uuidArgumentCaptor.capture());
@@ -139,11 +139,11 @@ class UserServiceTest {
     }
 
     @Nested
-    class listUsers{
+    class listUsers {
 
         @Test
         @DisplayName("Should return all users with success")
-        void shouldReturnAllUsersWithSuccess(){
+        void shouldReturnAllUsersWithSuccess() {
 
             var user = new User(
                     UUID.randomUUID(),
@@ -167,11 +167,11 @@ class UserServiceTest {
     }
 
     @Nested
-    class deleteById{
+    class deleteById {
 
         @Test
         @DisplayName("Shoudl delete user with success")
-        void shoudlDeleteUserWithSuccess(){
+        void shoudlDeleteUserWithSuccessWhenUserExists() {
 
             doReturn(true).when(repository).existsById(uuidArgumentCaptor.capture());
             doNothing().when(repository).deleteById(uuidArgumentCaptor.capture());
@@ -182,23 +182,41 @@ class UserServiceTest {
 
             //assert
             var idList = uuidArgumentCaptor.getAllValues();
-            assertEquals(userId,idList.get(0));
+            assertEquals(userId, idList.get(0));
             assertEquals(userId, idList.get(1));
 
             verify(repository, times(1)).existsById(any());
-            verify(repository, times(1)).deleteById( any());
+            verify(repository, times(1)).deleteById(any());
+        }
 
+        @Test
+        @DisplayName("Shoudl delete user with success")
+        void shoudlNotDeleteUserWhenUserNotExists() {
 
+            doReturn(false)
+                    .when(repository)
+                    .existsById(uuidArgumentCaptor.capture());
+            var userId = UUID.randomUUID();
+            //act
+
+            service.deleteById(userId.toString());
+
+            //assert
+            assertEquals(userId, uuidArgumentCaptor.getValue());
+
+            verify(repository, times(1))
+                    .existsById(uuidArgumentCaptor.getValue());
+            verify(repository, times(0)).deleteById(any());
         }
 
     }
 
     @Nested
-    class UserMapperTest{
+    class UserMapperTest {
 
         @Test
         @DisplayName("Should map userDto to user Correct")
-        void shouldMapUserDTOtoUserCorrect(){
+        void shouldMapUserDTOtoUserCorrect() {
 
             var input = new UserDTO("username",
                     "user@gmail.com",
