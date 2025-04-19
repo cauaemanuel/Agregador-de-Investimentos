@@ -2,6 +2,7 @@ package casa.on.agregadordeinvestimentos.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +24,9 @@ public class Account {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany(mappedBy = "account")
+    private List<AccountStock> accountStocks;
 
     public Account(){}
 
