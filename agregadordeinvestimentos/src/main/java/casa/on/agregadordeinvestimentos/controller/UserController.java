@@ -1,5 +1,6 @@
 package casa.on.agregadordeinvestimentos.controller;
 
+import casa.on.agregadordeinvestimentos.controller.DTO.AccountResponseDto;
 import casa.on.agregadordeinvestimentos.controller.DTO.CreateAccountDto;
 import casa.on.agregadordeinvestimentos.controller.DTO.UserDTO;
 import casa.on.agregadordeinvestimentos.controller.DTO.UserUpdateDTO;
@@ -61,6 +62,12 @@ public class UserController {
     public ResponseEntity<Void> createAccount(@PathVariable("userId") String useId, @RequestBody CreateAccountDto dto){
        service.createAccount(useId, dto);
        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/accounts")
+    public ResponseEntity<List<AccountResponseDto>> ListAccounts(@PathVariable("userId") String useId){
+        var accounts = service.listAccounts(useId);
+        return ResponseEntity.ok(accounts);
     }
     
 

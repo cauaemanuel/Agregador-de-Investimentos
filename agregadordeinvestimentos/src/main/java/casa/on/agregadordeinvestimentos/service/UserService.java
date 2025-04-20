@@ -1,9 +1,6 @@
 package casa.on.agregadordeinvestimentos.service;
 
-import casa.on.agregadordeinvestimentos.controller.DTO.BillingAddressCreateByAccount;
-import casa.on.agregadordeinvestimentos.controller.DTO.CreateAccountDto;
-import casa.on.agregadordeinvestimentos.controller.DTO.UserDTO;
-import casa.on.agregadordeinvestimentos.controller.DTO.UserUpdateDTO;
+import casa.on.agregadordeinvestimentos.controller.DTO.*;
 import casa.on.agregadordeinvestimentos.controller.map.AccountMapper;
 import casa.on.agregadordeinvestimentos.controller.map.UserMapper;
 import casa.on.agregadordeinvestimentos.entity.Account;
@@ -95,5 +92,15 @@ public class UserService {
 
        billingAddressRepository.save(billingAddress);
 
+    }
+
+    public List<AccountResponseDto> listAccounts(String useId) {
+        var user = repository.findById(UUID.fromString(useId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
+
+        return user.getAccounts()
+                .stream()
+                .map(r -> new AccountResponseDto(r.getAccountId().toString(), r.getDescription()))
+                .toList();
     }
 }
