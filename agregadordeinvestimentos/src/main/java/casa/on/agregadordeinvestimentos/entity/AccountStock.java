@@ -3,7 +3,7 @@ package casa.on.agregadordeinvestimentos.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tb_accounts_stocks")
+@Table(name = "tb_accountstocks")
 public class AccountStock {
 
     @EmbeddedId

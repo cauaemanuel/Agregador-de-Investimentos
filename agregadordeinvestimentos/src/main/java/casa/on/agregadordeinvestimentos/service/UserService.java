@@ -1,26 +1,47 @@
 package casa.on.agregadordeinvestimentos.service;
 
+import casa.on.agregadordeinvestimentos.controller.DTO.BillingAddressCreateByAccount;
+import casa.on.agregadordeinvestimentos.controller.DTO.CreateAccountDto;
 import casa.on.agregadordeinvestimentos.controller.DTO.UserDTO;
 import casa.on.agregadordeinvestimentos.controller.DTO.UserUpdateDTO;
+import casa.on.agregadordeinvestimentos.controller.map.AccountMapper;
 import casa.on.agregadordeinvestimentos.controller.map.UserMapper;
+import casa.on.agregadordeinvestimentos.entity.Account;
+import casa.on.agregadordeinvestimentos.entity.BillingAddress;
 import casa.on.agregadordeinvestimentos.entity.User;
+import casa.on.agregadordeinvestimentos.repository.AccountRepository;
+import casa.on.agregadordeinvestimentos.repository.BillingAddressRepository;
 import casa.on.agregadordeinvestimentos.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.io.IO.println;
 
 @Service
 public class UserService {
 
     private UserMapper mapper;
     private UserRepository repository;
+    private AccountMapper AcMapper;
+    private AccountRepository accountRepository;
 
-    public UserService(UserRepository repository, UserMapper mapper) {
-        this.repository = repository;
+    private BillingAddressRepository billingAddressRepository;
+
+    public UserService(UserMapper mapper, UserRepository repository, AccountMapper acMapper, AccountRepository accountRepository, BillingAddressRepository billingAddressRepository) {
         this.mapper = mapper;
+        this.repository = repository;
+        AcMapper = acMapper;
+        this.accountRepository = accountRepository;
+        this.billingAddressRepository = billingAddressRepository;
     }
 
     public User createUser(UserDTO dto){
@@ -59,5 +80,20 @@ public class UserService {
 
     public List<User> findAll(){
         return repository.findAll();
+    }
+
+    public void createAccount(String useId, CreateAccountDto dto) {
+       var user = repository.findById(UUID.fromString(useId))
+               .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
+
+       var account = AcMapper.DtoToAccount(dto, user);
+
+       var accountCreated = accountRepository.save(account);
+       var billingAddress = BillingAddress.of(new BillingAddressCreateByAccount(account,
+               dto.getStreet(),
+               dto.getNumber()));
+
+       billingAddressRepository.save(billingAddress);
+
     }
 }

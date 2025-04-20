@@ -1,7 +1,9 @@
 package casa.on.agregadordeinvestimentos.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,9 +18,10 @@ public class Account {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "account")
     @PrimaryKeyJoinColumn
     private BillingAddress billingAddress;
 
@@ -26,13 +29,21 @@ public class Account {
     private String description;
 
     @OneToMany(mappedBy = "account")
-    private List<AccountStock> accountStocks;
+    private List<AccountStock> accountStocks = new ArrayList<>();
 
     public Account(){}
 
     public Account(UUID accountId, String description) {
         this.accountId = accountId;
         this.description = description;
+    }
+
+    public Account(UUID accountId, User user, BillingAddress billingAddress, String description, List<AccountStock> accountStocks) {
+        this.accountId = accountId;
+        this.user = user;
+        this.billingAddress = billingAddress;
+        this.description = description;
+        this.accountStocks = accountStocks;
     }
 
     public User getUser() {
