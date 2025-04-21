@@ -46,6 +46,23 @@ public class Account {
         this.accountStocks = accountStocks;
     }
 
+
+    public BillingAddress getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(BillingAddress billingAddress) {
+        this.billingAddress = billingAddress;
+    }
+
+    public List<AccountStock> getAccountStocks() {
+        return accountStocks;
+    }
+
+    public void setAccountStocks(List<AccountStock> accountStocks) {
+        this.accountStocks = accountStocks;
+    }
+
     public User getUser() {
         return user;
     }

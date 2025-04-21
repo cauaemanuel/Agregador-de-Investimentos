@@ -86,6 +86,7 @@ public class UserService {
        var account = AcMapper.DtoToAccount(dto, user);
 
        var accountCreated = accountRepository.save(account);
+
        var billingAddress = BillingAddress.of(new BillingAddressCreateByAccount(account,
                dto.getStreet(),
                dto.getNumber()));
