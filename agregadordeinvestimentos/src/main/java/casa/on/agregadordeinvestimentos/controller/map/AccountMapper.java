@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
 
-    // Define explicitamente que o accountId será null
-    @Mapping(target = "user", source = "user")  // Mapeia o 'user' do DTO para a entidade// Ignora a lista accountStocks
+    @Mapping(target = "user", source = "user")
     Account DtoToAccount(CreateAccountDto dto, User user);
 }

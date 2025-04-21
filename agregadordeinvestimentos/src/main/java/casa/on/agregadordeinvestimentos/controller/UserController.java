@@ -69,6 +69,4 @@ public class UserController {
         var accounts = service.listAccounts(useId);
         return ResponseEntity.ok(accounts);
     }
-    
-
 }
