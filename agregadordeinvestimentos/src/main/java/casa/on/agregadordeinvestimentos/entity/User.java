@@ -49,6 +49,7 @@ public class User {
         this.updatedTimestamp = updatedTimestamp;
     }
 
+    @JsonIgnore
     public List<Account> getAccounts() {
         return accounts;
     }

@@ -19,14 +19,14 @@ public class AccountController {
     }
 
     @PostMapping("/{accountId}/stocks")
-    public ResponseEntity<Void> createAccount(@PathVariable("accountId") String accountId,
+    public ResponseEntity<Void> createAssociateAccount(@PathVariable("accountId") String accountId,
                                               @RequestBody AssociateAccountStockDto dto){
         accountService.associateStock(accountId, dto);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{accountId}/stocks")
-    public ResponseEntity<List<StockListDTO>> createAccount(@PathVariable("accountId") String accountId){
+    public ResponseEntity<List<StockListDTO>> listStockAccount(@PathVariable("accountId") String accountId){
         var list = accountService.listStocks(accountId);
         return ResponseEntity.ok(list);
     }
